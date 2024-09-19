@@ -1,4 +1,3 @@
-// src/utils/coinMarketCap.ts
 import got from "got";
 import { config } from "../config/index";
 

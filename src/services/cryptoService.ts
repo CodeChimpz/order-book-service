@@ -1,10 +1,10 @@
-// src/services/cryptoService.ts
 import {fetchAllCoins, fetchMarketData} from "../utils/coinMarketCap";
 import {collectVolume} from "../utils/bigDecimal";
 import {config} from "../config/index";
 import {fetchOrderBook} from "../utils/ccxt";
+import {CoinsData, OrderBookLocal} from "../types";
 
-export async function initializeCoinsData() {
+export async function initializeCoinsData(): Promise<CoinsData> {
   const allCoins = await fetchAllCoins();
 
   // Filter based on selected coins
@@ -12,12 +12,20 @@ export async function initializeCoinsData() {
     config.selectedCoins.includes(coin.slug)
   );
 
+
+  // Use Promise.all to fetch market data in parallel
+  const marketDataPromises = filteredCoins.map((coin: any) =>
+    fetchMarketData(coin.slug)
+  );
+
+  const marketDataResults = await Promise.all(marketDataPromises);
+
+  // Process market data and filter markets based on exchanges, volume, and trading pairs
   const monitoredList: any = {};
 
-  for (const coin of filteredCoins) {
-    const marketData = await fetchMarketData(coin.slug);
+  filteredCoins.forEach((coin: any, index: number) => {
+    const marketData = marketDataResults[index];
 
-    // Further filtering based on exchanges, volume, and trading pairs
     const filteredMarkets = marketData.data.marketPairs.filter((market: any) =>
       config.selectedExchanges.includes(market.exchangeName) &&
       market.volumeUsd > config.minVolume &&
@@ -25,12 +33,12 @@ export async function initializeCoinsData() {
     );
 
     monitoredList[coin.slug] = filteredMarkets;
-  }
+  });
 
   return monitoredList;
 }
 
-export async function updateOrderBook(coinSlug: string, marketPair: string, exchangeSlug: string) {
+export async function updateOrderBook(coinSlug: string, marketPair: string, exchangeSlug: string): Promise<OrderBookLocal> {
   const orderBook = await fetchOrderBook(exchangeSlug, marketPair);
   const buyVolume = collectVolume(orderBook.bids as number[][]);
   const sellVolume = collectVolume(orderBook.asks as number[][]);

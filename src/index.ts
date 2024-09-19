@@ -1,9 +1,7 @@
-// src/index.ts
 import { startCronJobs } from "./cron";
 
 (async function main() {
-  console.log("Starting Crypto Monitoring System...");
+  console.log("Starting...");
 
-  // Start CRON jobs
   startCronJobs();
 })();

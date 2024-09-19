@@ -1,4 +1,5 @@
-// src/config/config.ts
+import {config as dotenvCfg} from "dotenv"
+dotenvCfg()
 
 export const config = {
   selectedCoins: [
@@ -14,7 +15,7 @@ export const config = {
   selectedGroups: ["USDT", "USDC", "FDUSD"],
   minVolume: 10000,
   minPercentage: 1,
-  coinMarketCapKey: "ed614edf-4272-4d80-b753-7cfa51622173",
+  coinMarketCapKey: process.env.COINMARKETCAPKEY,
   baseMapUrl: "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?listing_status=active&start=1&limit=5000&sort=cmc_rank",
   baseCoinUrl: (slug: string) => `https://api.coinmarketcap.com/data-api/v3/cryptocurrency/market-pairs/latest?slug=${slug}&category=spot`
 };
