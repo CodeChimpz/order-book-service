@@ -2,6 +2,7 @@ import * as cron from "cron";
 import {CoinsData, PricesList} from "./types";
 import {mainService} from "./services/main.service";
 import {coinService} from "./services/coin.service";
+import {LogDescription} from "ccxt/js/src/static_dependencies/ethers";
 
 const dailyUpdateJob = new cron.CronJob('0 0 * * *', async () => {
   console.log("Running daily update...");
@@ -15,17 +16,14 @@ const orderBookUpdateJob = new cron.CronJob('*/30 * * * * *', async () => {
     const coinsData: CoinsData = await coinService.getCoinsData()
 
     const pricesList: PricesList = {};
-
-    const orderBookPromises = Object.entries(coinsData).map(async (entry) => {
+    const orderBookPromises = Object.entries(coinsData).slice(0,1).map(async (entry) => {
       //todo: separate function
       const [slug, markets] = entry
 
       if (!markets.length) {
         return null
       }
-
       const pricesPromises = markets.map(async market => {
-
         const updated = await mainService.updateOrderBook(slug, market.marketPair, market.exchangeName)
 
         if (!pricesList[slug]) {
@@ -45,9 +43,9 @@ const orderBookUpdateJob = new cron.CronJob('*/30 * * * * *', async () => {
       })
 
       const prices = await Promise.all(pricesPromises)
-
-      const resultData = mainService.getExtremePrices(slug, prices)
-      console.log(`
+      try {
+        const resultData = mainService.getExtremePrices(slug, prices)
+        console.log(`
           ${slug.toUpperCase()}
           ${new Date().toUTCString()}
          
@@ -62,6 +60,10 @@ const orderBookUpdateJob = new cron.CronJob('*/30 * * * * *', async () => {
           price: ${resultData.bestSell.sell}
           (${resultData.bestBuy.buy}) <=> (${resultData.bestSell.sell})
           volume: ${resultData.bestSell.sell}`)
+      } catch (e) {
+        console.log('No prices for', slug)
+        return null
+      }
     })
     await Promise.all(orderBookPromises)
   })

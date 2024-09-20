@@ -50,12 +50,11 @@ export class MainService {
     const orderBook = await fetchOrderBook(exchangeSlug, marketPair);
     const buyVolume = collectVolume(orderBook.bids as number[][]);
     const sellVolume = collectVolume(orderBook.asks as number[][]);
-
     return {
-      buy: +buyVolume.price,
-      buyVolume: +buyVolume.volume,
-      sell: +sellVolume.price,
-      sellVolume: +sellVolume.volume,
+      buy: Number(buyVolume.price.getValue()),
+      buyVolume: Number(buyVolume.volume.getValue()),
+      sell: Number(sellVolume.price.getValue()),
+      sellVolume: Number(sellVolume.volume.getValue()),
       time: new Date(),
     };
   }
