@@ -1,5 +1,5 @@
-import bigDecimal from "js-big-decimal";
 import { config } from "../config/index";
+import bigDecimal from "js-big-decimal";
 
 export function collectVolume(arr: number[][]) {
   const amountInUsdt = new bigDecimal(config.minVolume.toString());

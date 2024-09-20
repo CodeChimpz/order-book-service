@@ -27,19 +27,21 @@ export class MainService {
 
     filteredCoins.forEach((coin: any, index: number) => {
       const marketData = marketDataResults[index];
-
-      const filteredMarkets = marketData.data.marketPairs.filter((market: any) =>
-        config.selectedExchanges.includes(market.exchangeName) &&
-        market.volumeUsd > config.minVolume &&
-        config.selectedGroups.includes(market.quoteSymbol)
-      );
+      const filteredMarkets = marketData.data.marketPairs.map((market: any) => ({
+        ...market,
+        exchangeName: market.exchangeName.toLowerCase()
+      }))
+        .filter((market: any) =>
+          config.selectedExchanges.includes(market.exchangeName)
+          && market.volumeUsd > config.minVolume
+          && config.selectedGroups.includes(market.quoteSymbol)
+        );
 
       monitoredList[coin.slug] = filteredMarkets;
     });
 
     // Save the data to MongoDB
     await coinService.saveCoinsData(monitoredList);
-
     return monitoredList;
   }
 
