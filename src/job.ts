@@ -1,5 +1,5 @@
 import * as cron from "cron";
-import {CoinsData} from "./types";
+import {CoinsData, PricesList} from "./types";
 import {mainService} from "./services/main.service";
 import {coinService} from "./services/coin.service";
 
@@ -10,20 +10,62 @@ const dailyUpdateJob = new cron.CronJob('0 0 * * *', async () => {
 });
 
 const orderBookUpdateJob = new cron.CronJob('*/30 * * * * *', async () => {
-  console.log("Updating order books...");
-  const coinsData: CoinsData = await coinService.getCoinsData()
-  const orderBookPromises = Object.entries(coinsData).map(async (entry) => {
-    const [slug, markets] = entry
-    if (!markets.length) {
-      return null
-    }
-    for (const market of markets) {
-      const updatedData = await mainService.updateOrderBook(slug, market.marketPair, market.exchangeName);
-      console.log(`Updated order book for ${slug} on ${market.exchangeName}:`, updatedData);
-    }
+    console.log("Updating order books...");
+
+    const coinsData: CoinsData = await coinService.getCoinsData()
+
+    const pricesList: PricesList = {};
+
+    const orderBookPromises = Object.entries(coinsData).map(async (entry) => {
+      //todo: separate function
+      const [slug, markets] = entry
+
+      if (!markets.length) {
+        return null
+      }
+
+      const pricesPromises = markets.map(async market => {
+
+        const updated = await mainService.updateOrderBook(slug, market.marketPair, market.exchangeName)
+
+        if (!pricesList[slug]) {
+          pricesList[slug] = {};
+        }
+        if (!pricesList[slug][market.exchangeName]) {
+          pricesList[slug][market.exchangeName] = {};
+        }
+
+        pricesList[slug][market.exchangeName] = {
+          time: new Date(),
+          buy: updated.buy,
+          sell: updated.sell
+        };
+
+        return updated
+      })
+
+      const prices = await Promise.all(pricesPromises)
+
+      const resultData = mainService.getExtremePrices(slug, prices)
+      console.log(`
+          ${slug.toUpperCase()}
+          ${new Date().toUTCString()}
+         
+          ${resultData.percentageDifference}%
+          
+          buy
+          price: ${resultData.bestBuy.buy}
+          (${resultData.bestBuy.buy}) <=> (${resultData.bestSell.sell})
+          volume: ${resultData.bestBuy.buyVolume}
+          
+          sell
+          price: ${resultData.bestSell.sell}
+          (${resultData.bestBuy.buy}) <=> (${resultData.bestSell.sell})
+          volume: ${resultData.bestSell.sell}`)
+    })
+    await Promise.all(orderBookPromises)
   })
-  await Promise.all(orderBookPromises)
-});
+;
 
 export function startCronJobs() {
   mainService.initializeCoinsData();

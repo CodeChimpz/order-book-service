@@ -2,8 +2,9 @@ import {fetchAllCoins, fetchMarketData} from "../utils/coinMarketCap";
 import {collectVolume} from "../utils/bigDecimal";
 import {config} from "../config/index";
 import {fetchOrderBook} from "../utils/ccxt";
-import {CoinsData, OrderBookLocal} from "../types";
+import {BestPricesResult, CoinsData, OrderBookLocal, PricesList} from "../types";
 import {coinService} from "./coin.service";
+import {CalcService} from "../utils/calc";
 
 export class MainService {
 
@@ -51,10 +52,46 @@ export class MainService {
     const sellVolume = collectVolume(orderBook.asks as number[][]);
 
     return {
-      buy: buyVolume.price.getValue(),
-      sell: sellVolume.price.getValue(),
+      buy: +buyVolume.price,
+      buyVolume: +buyVolume.volume,
+      sell: +sellVolume.price,
+      sellVolume: +sellVolume.volume,
       time: new Date(),
     };
+  }
+
+  getExtremePrices(slug: string, prices: OrderBookLocal[]): BestPricesResult {
+    // Find the highest and lowest prices for the current coin
+    const validPrices = prices.filter(data => data !== null && data.buy && data.sell);
+    return this.getBestPrices(validPrices)
+  }
+
+  // Function to find the best buy and sell prices
+  getBestPrices(pricesList: OrderBookLocal[]): BestPricesResult {
+    let bestBuy: OrderBookLocal | null = null;
+    let bestSell: OrderBookLocal | null = null;
+
+    for (const market of pricesList) {
+
+      if (!bestBuy || (market.buy !== null && market.buy < bestBuy.buy!)) {
+        bestBuy = market;
+      }
+
+      if (!bestSell || (market.sell !== null && market.sell > bestSell.sell!)) {
+        bestSell = market;
+      }
+    }
+
+    if (!bestBuy || !bestSell) {
+      throw new Error('No valid buy or sell prices found.');
+    }
+
+    const percentageDifference = CalcService.calculatePercentageDifference(+bestBuy.buy, +bestSell.sell);
+
+    // Format the output
+    return {
+      bestBuy, bestSell, percentageDifference
+    }
   }
 }
 
