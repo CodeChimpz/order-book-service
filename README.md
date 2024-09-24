@@ -28,7 +28,7 @@ This will build the app image and start both the app and MongoDB containers.
 ```
 npm install
 npm install -g tsx
-tsx src/index.ts
+tsx src/init.service.ts
 ```
 
 ### Project Structure
@@ -41,7 +41,7 @@ tsx src/index.ts
 │   |   |── main       # General shared app functionality and main functions used by jobs
 │   ├── utils          # Various util functions for bigDecimal, ccxt, general formulas, coinmarketcap
 │   ├── types          #       
-│   └── index.ts       # Start the app and init db/jobs
+│   └── init.service.ts       # Start the app and init db/jobs
 │   └── job.ts         # Set up cron jobs for init/update coin data      
 ├── Dockerfile         # Docker image definition
 ├── docker-compose.yml # Docker Compose setup for app and MongoDB
