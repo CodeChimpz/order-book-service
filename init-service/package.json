@@ -1,23 +1,20 @@
 {
-  "name": "crypto-test",
+  "name": "init-service",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "docker-compose up --build",
-    "dev": "tsx src/index.ts"
+    "start": "tsc && node dist/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/dotenv": "^8.2.0",
     "@types/got": "^9.6.12",
-    "ccxt": "^4.4.3",
+    "@types/mongoose": "^5.11.97",
     "cron": "^3.1.7",
     "dotenv": "^16.4.5",
     "got": "^14.4.2",
-    "js-big-decimal": "^2.1.0",
     "mongoose": "^8.6.3"
   }
 }

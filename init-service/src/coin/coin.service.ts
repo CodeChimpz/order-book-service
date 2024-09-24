@@ -1,5 +1,5 @@
 import {CoinsData} from '../types';
-import {Coin, ICoin} from "../db/schema/coin.schema";
+import {Coin, ICoin} from "./coin.schema";
 
 export class CoinService {
   constructor() {

@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm install
 RUN npm i -g tsx
 
-COPY . .
+COPY .. .
 
 # Start the application.
 CMD ["npm", "run", "dev"]

@@ -1,5 +1,3 @@
-import * as process from "process";
-
 export interface Market {
   marketPair: string;
   exchangeName: string;
