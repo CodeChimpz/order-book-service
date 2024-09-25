@@ -1,5 +1,5 @@
+import { config } from "../config/index.js";
 import got from "got";
-import { config } from "../config/index";
 
 export async function fetchAllCoins() {
   const url = config.baseMapUrl;
