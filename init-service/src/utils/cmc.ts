@@ -1,4 +1,4 @@
-import { config } from "../config";
+import { config } from "../config/index.js";
 import got from "got";
 
 export async function fetchAllCoins() {

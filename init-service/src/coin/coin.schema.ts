@@ -1,5 +1,5 @@
 import mongoose, {Schema, Document} from 'mongoose';
-import {Market} from "../types";
+import {Market} from "../types/index.js";
 
 //todo: schema validation
 const CoinSchema: Schema = new Schema({

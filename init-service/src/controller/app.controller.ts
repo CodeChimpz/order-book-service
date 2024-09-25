@@ -1,4 +1,4 @@
-import {coinService} from "../coin/coin.service";
+import {coinService} from "../coin/coin.service.js";
 
 export class AppController {
   constructor() {

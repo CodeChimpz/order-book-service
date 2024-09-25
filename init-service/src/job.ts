@@ -1,8 +1,8 @@
-import {connect} from "./db/connections";
-import {fetchAllCoins, fetchMarketData} from "./utils/cmc";
-import {config} from "./config";
-import {CoinsData} from "./types";
-import {coinService} from "./coin/coin.service";
+import {connect} from "./db/connections.js";
+import {fetchAllCoins, fetchMarketData} from "./utils/cmc.js";
+import {config} from "./config/index.js";
+import {CoinsData} from "./types/index.js";
+import {coinService} from "./coin/coin.service.js";
 
 export async function MainJob () {
   console.log("Running daily update...");

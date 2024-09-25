@@ -1,7 +1,7 @@
-import * as cron from "cron";
+import cron from "cron";
 import express, {json} from 'express';
-import {controller} from "./controller/app.controller";
-import {MainJob} from "./job";
+import {controller} from "./controller/app.controller.js";
+import {MainJob} from "./job.js";
 
 const dailyUpdateJob = new cron.CronJob('0 0 * * *', MainJob);
 dailyUpdateJob.start();
