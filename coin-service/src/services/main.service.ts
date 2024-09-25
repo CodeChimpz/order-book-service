@@ -1,5 +1,4 @@
-import {fetchOrderBook} from "../utils/ccxt";
-import {OrderBookLocal} from "../types";
+import {fetchOrderBook} from "../utils/ccxt.js";
 
 export class MainService {
   data: any[] = []

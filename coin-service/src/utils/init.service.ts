@@ -1,4 +1,4 @@
-import {CoinsData} from "../types";
+import {CoinsData} from "../types/index.js";
 import got from "got";
 import {config} from "dotenv";
 
