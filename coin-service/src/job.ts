@@ -28,7 +28,7 @@ export class MainJob {
         } else {
           this.result[coinSlug][market.exchangeName] = updatedData
         }
-        console.log(this.result)
+        // console.log(this.result)
       }
     }
     console.log('Updated result')
